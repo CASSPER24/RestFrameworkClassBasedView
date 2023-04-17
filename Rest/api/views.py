@@ -4,15 +4,27 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from school.models import Student, Teacher
 from .serializers import *
+from django.contrib.auth.models import User
+from rest_framework import permissions
+from .permissions import IsOwnerOrReadOnly
 
-
-class StudentList(generics.ListAPIView):
+class StudentList(generics.ListCreateAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]
+
 class StudentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     lookup_field = 'pk'
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
 
 class TeacherList(generics.ListAPIView):
     queryset = Teacher.objects.all()
@@ -22,3 +34,12 @@ class TeacherDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TeacherSerializer
     lookup_field = 'pk'
 
+
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

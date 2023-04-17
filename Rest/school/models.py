@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 
 class Student(models.Model):
@@ -9,7 +10,7 @@ class Student(models.Model):
     age = models.IntegerField()
     email = models.EmailField(max_length=35)
     phone = models.CharField(max_length=13)
-
+    owner = models.ForeignKey('auth.User', related_name='students', on_delete=models.CASCADE)
 
 
 class Teacher(models.Model):
@@ -19,3 +20,4 @@ class Teacher(models.Model):
     age = models.IntegerField()
     email = models.EmailField(max_length=35)
     phone = models.CharField(max_length=13)
+    owner = models.ForeignKey('auth.User', related_name='teachers', on_delete=models.CASCADE)
