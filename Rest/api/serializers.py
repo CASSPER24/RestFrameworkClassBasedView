@@ -1,11 +1,13 @@
-from rest_framework import serializers
+from rest_framework import serializers, viewsets
 from school.models import Student, Teacher
 from django.contrib.auth.models import User
 
-class StudentSerializer(serializers.ModelSerializer):
+class StudentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Student
         fields = '__all__'
+        extra_kwargs = {'url': {'view_name': 'StudentDetail'}}
+
 
 
 
@@ -14,11 +16,15 @@ class TeacherSerializer(serializers.ModelSerializer):
         model = Teacher
         fields = '__all__'
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
-    students = serializers.PrimaryKeyRelatedField(many=True, queryset=Student.objects.all())
+    students = serializers.HyperlinkedIdentityField(view_name='StudentDetail', format='html')
     class Meta:
         model = User
-        fields = ['id', 'username', 'students', 'owner']
+        fields = ['url', 'id', 'username', 'students', 'owner']
+        extra_kwargs = {'url': {'view_name': 'UserDetail'}}
+
+
+
 
 
